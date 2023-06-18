@@ -1,11 +1,19 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-contract EtherWallet {
-    address payable public owner;
+import "./ExchangeModerator.sol";
 
-    constructor() {
+contract Wallet {
+    ExchangeModerator target = ExchangeModerator(exchange);
+
+    address payable private immutable owner;
+    address payable private exchange;
+    uint256 private immutable minimumAmount;
+
+    constructor(address _exchange, uint256 _minimumAmount) {
         owner = payable(msg.sender);
+        exchange = payable(_exchange);
+        minimumAmount = _minimumAmount;
     }
 
     receive() external payable {}
@@ -15,7 +23,21 @@ contract EtherWallet {
         payable(msg.sender).transfer(_amount);
     }
 
-    function getBalance() external view returns (uint) {
+    function transfer(address to, uint256 amount) external {
+        require(amount > balance() && amount > minimumAmount, "Insufficient balance");
+        (bool success,) = to.call{value: amount}("");
+        require(success, "Transaction failed");
+    }
+
+    function depositToExchangeRequest(uint256 amount) external {
+        require(amount > balance() && amount > minimumAmount, "Insufficient balance");
+        target.depositToExchangeRequest{value: amount}(msg.sender);
+    }
+
+
+    function balance() public view returns (uint256) {
         return address(this).balance;
     }
+
+
 }

@@ -7,40 +7,40 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract PolygonWalletsManager is Ownable,ReentrancyGuard {
 
-/// @notice Explain to an end user what this does
-/// @dev Explain to a developer any extra details
-/// param Documents a parameter just like in doxygen (must be followed by parameter name)
+    /// @notice Explain to an end user what this does
+    /// @dev Explain to a developer any extra details
+    /// param Documents a parameter just like in doxygen (must be followed by parameter name)
 
 
-// ****************************************************
-// ********************** Events **********************
-// ****************************************************
+    // ****************************************************
+    // ********************** Events **********************
+    // ****************************************************
 
-/// @notice Explain to an end user what this does
-/// @dev Explain to a developer any extra details
-/// @param to a parameter just like in doxygen (must be followed by parameter name)
-event Deposit(address to, uint256 amount);
-event Transfer(address from, address to, uint256 amount);
-event InternalTransfer(address from, address to, uint256 amount);
-event WithdrawFromExchangeRequest(address to, uint256 amount);
-event DepositToExchangeRequest(address from, uint256 amount);
-event CancelDepositRequest(address from, uint256 amount);
-event WithdrawRequestSucceed(address to, uint256 amount);
-// event Deposit(address to, uint256 amount);
+    /// @notice Explain to an end user what this does
+    /// @dev Explain to a developer any extra details
+    /// @param to a parameter just like in doxygen (must be followed by parameter name)
+    event Deposit(address to, uint256 amount);
+    event Transfer(address from, address to, uint256 amount);
+    event InternalTransfer(address from, address to, uint256 amount);
+    event WithdrawFromExchangeRequest(address to, uint256 amount);
+    event DepositToExchangeRequest(address from, uint256 amount);
+    event CancelDepositRequest(address from, uint256 amount);
+    event WithdrawRequestSucceed(address to, uint256 amount);
+    // event Deposit(address to, uint256 amount);
 
 
-// ****************************************************
-// ******************** Variables *********************
-// ****************************************************
+    // ****************************************************
+    // ******************** Variables *********************
+    // ****************************************************
 
-uint256 private immutable minAmount;
-uint8 private immutable fee;
-uint256 private income;
-address private exchangePoolAddress;
+    uint256 private immutable minAmount;
+    uint8 private immutable fee;
+    uint256 private income;
+    address private exchangePoolAddress;
 
-// ****************************************************
-// ******************* Constructor ********************
-// ****************************************************
+    // ****************************************************
+    // ******************* Constructor ********************
+    // ****************************************************
 
 
     constructor(uint256 _minAmount, uint8 _fee, address _exchangePoolAddress) {
@@ -49,27 +49,27 @@ address private exchangePoolAddress;
         exchangePoolAddress = _exchangePoolAddress;
     }
 
-// ****************************************************
-// ********************* Modifiers *********************
-// ****************************************************
+    // ****************************************************
+    // ********************* Modifiers *********************
+    // ****************************************************
 
-modifier onlyExchange {
-    require(msg.sender == exchangePoolAddress, "onlyExchange can call");
-    _;
-}
+    modifier onlyExchange {
+        require(msg.sender == exchangePoolAddress, "onlyExchange can call");
+        _;
+    }
 
 
-// ****************************************************
-// ********************* Mappings *********************
-// ****************************************************
+    // ****************************************************
+    // ********************* Mappings *********************
+    // ****************************************************
 
 
     mapping (address => uint256) private balances;
     mapping (address => uint256) private pendingAmount;
 
-// ****************************************************
-// ********************  functions ********************
-// ****************************************************
+    // ****************************************************
+    // ********************  functions ********************
+    // ****************************************************
 
 
     /// @notice Explain to an end user what this does
@@ -103,13 +103,6 @@ modifier onlyExchange {
         emit DepositToExchangeRequest(msg.sender, amount);
     }
 
-    function cancelDepositRequest(uint256 amount) external nonReentrant{
-        require(pendingAmount[msg.sender] >= amount,"Insufficient pending amount");
-        pendingAmount[msg.sender] -= amount;
-        (bool success,) = msg.sender.call{value: _amount(amount,fee)}("");
-        require(success, "Transaction failed");
-        emit CancelDepositRequest(msg.sender, amount);
-    }
     /// @notice Explain to an end user what this does
     /// @dev Explain to a developer any extra details
     /// param Documents a parameter just like in doxygen (must be followed by parameter name)
@@ -137,10 +130,6 @@ modifier onlyExchange {
         emit InternalTransfer(msg.sender, to, amount);
     }
 
-    function withdrawSucceed(address to) external onlyExchange payable{
-        balances[to] += msg.value;
-        emit WithdrawRequestSucceed(to,msg.value);
-    }
     /// @notice Explain to an end user what this does
     /// @dev Explain to a developer any extra details
     /// param Documents a parameter just like in doxygen (must be followed by parameter name)
@@ -153,9 +142,19 @@ modifier onlyExchange {
         income -= amount;
     }
 
-// ****************************************************
-// ****************** View functions ******************
-// ****************************************************
+    /// @notice Explain to an end user what this does
+    /// @dev Explain to a developer any extra details
+    /// param Documents a parameter just like in doxygen (must be followed by parameter name)
+    /// return Documents the return variables of a contract’s function state variable
+    /// inheritdoc	Copies all missing tags from the base function (must be followed by the contract name)
+    function withdrawalSucceed(address to, uint256 amount) external onlyExchange {
+        pendingAmount[to] -= amount;
+        emit WithdrawRequestSucceed(to, amount);
+    }
+
+    // ****************************************************
+    // ****************** View functions ******************
+    // ****************************************************
 
     function showBalance (address user) view public returns (uint256) {
         return balances[user];
@@ -164,14 +163,14 @@ modifier onlyExchange {
     function showIncome() view public returns (uint256) {
         return income;
     }
-// ****************************************************
-// ****************** Pure functions ******************
-// ****************************************************
+    // ****************************************************
+    // ****************** Pure functions ******************
+    // ****************************************************
 
-/// @notice Explain to an end user what this does
-/// @dev Explain to a developer any extra details
-/// @param initalAmount amount before calculating fee
-/// @param txFee the fee that should be deducated(this amount is amount in thousandth)
+    /// @notice Explain to an end user what this does
+    /// @dev Explain to a developer any extra details
+    /// @param initalAmount amount before calculating fee
+    /// @param txFee the fee that should be deducated(this amount is amount in thousandth)
     function _amount(uint256 initalAmount ,uint txFee) internal pure returns(uint256) {
         return (initalAmount * (1000 - txFee)) / 1000;
     }

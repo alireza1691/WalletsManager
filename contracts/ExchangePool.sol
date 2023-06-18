@@ -9,13 +9,28 @@ contract ExchangePool {
 PolygonWalletsManager target = PolygonWalletsManager(walletsManager);
 
 address payable private walletsManager;
-constructor (address _walletsManager) {
+address private allowedAddress;
+
+constructor (address _walletsManager, address _allowedAddress) {
     walletsManager = payable(_walletsManager);
+    allowedAddress = _allowedAddress;
 }
 
-function payWithdrawal (address to) payable external {
-    target.withdrawSucceed{value: msg.value}(to);
+modifier allowed {
+    require(msg.sender == allowedAddress, "Not allowed");
+    _;
 }
 
+function payWithdrawalByAddress (address to) payable external allowed{
+    target.withdrawalSucceed(to, msg.value);
+    target.deposit{value: msg.value}(to);
+}
+
+function payWithdrawalByContract(address to, uint256 amount)  external allowed{
+    target.withdrawalSucceed(to, amount);
+    target.deposit{value: amount}(to);
+}
+
+receive() external payable{}
 
 }
