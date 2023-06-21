@@ -1,28 +1,28 @@
-// We require the Hardhat Runtime Environment explicitly here. This is optional
-// but useful for running the script in a standalone fashion through `node <script>`.
-//
-// You can also run a script with `npx hardhat run <script>`. If you do that, Hardhat
-// will compile your contracts, add the Hardhat Runtime Environment's members to the
-// global scope, and execute the script.
-const hre = require("hardhat");
+const { Contract, providers, BigNumber, ContractFactory } = require("ethers");
+const { formatEther } = require("ethers/lib/utils");
+const {hre, ethers, network, getNamedAccounts, deployments} = require("hardhat");
+// const { ethers } = require("ethers")
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const unlockTime = currentTimestampInSeconds + 60;
+  const accounts = await ethers.getSigners()
+  const deployer = accounts[0]
+  const user =  accounts[1]
+  console.log(deployer.address,'\n',user.address);
 
-  const lockedAmount = hre.ethers.parseEther("0.001");
+  const moderator =await deployments.get("ExchangeModerator")
+  // console.log(moderator);
+  console.log("******************************************************************");
+  console.log("******************************************************************");
+  const moderatorContract = await ethers.getContractAt(moderator.abi,moderator.address)
+  // console.log(moderatorContract);
 
-  const lock = await hre.ethers.deployContract("Lock", [unlockTime], {
-    value: lockedAmount,
-  });
+  const creation = await moderatorContract.newWallet(2);
+  const tx = await creation.wait(1)
+  console.log(tx.events[0].args.walletContractAddress);
+  const check = await moderatorContract.userWallet(deployer.address)
+  console.log(check);
+  // const contractWalletModerator = await ethers.
 
-  await lock.waitForDeployment();
-
-  console.log(
-    `Lock with ${ethers.formatEther(
-      lockedAmount
-    )}ETH and unlock timestamp ${unlockTime} deployed to ${lock.target}`
-  );
 }
 
 // We recommend this pattern to be able to use async/await everywhere
