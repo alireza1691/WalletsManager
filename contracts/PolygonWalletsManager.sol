@@ -36,27 +36,25 @@ contract PolygonWalletsManager is Ownable,ReentrancyGuard {
     uint256 private immutable minAmount;
     uint8 private immutable fee;
     uint256 private income;
-    address private exchangePoolAddress;
 
     // ****************************************************
     // ******************* Constructor ********************
     // ****************************************************
 
 
-    constructor(uint256 _minAmount, uint8 _fee, address _exchangePoolAddress) {
+    constructor(uint256 _minAmount, uint8 _fee) {
         minAmount = _minAmount;
         fee = _fee;
-        exchangePoolAddress = _exchangePoolAddress;
     }
 
     // ****************************************************
     // ********************* Modifiers *********************
     // ****************************************************
 
-    modifier onlyExchange {
-        require(msg.sender == exchangePoolAddress, "onlyExchange can call");
-        _;
-    }
+    // modifier onlyExchange {
+    //     require(msg.sender == exchangePoolAddress, "onlyExchange can call");
+    //     _;
+    // }
 
 
     // ****************************************************
@@ -147,10 +145,11 @@ contract PolygonWalletsManager is Ownable,ReentrancyGuard {
     /// param Documents a parameter just like in doxygen (must be followed by parameter name)
     /// return Documents the return variables of a contract’s function state variable
     /// inheritdoc	Copies all missing tags from the base function (must be followed by the contract name)
-    function withdrawalSucceed(address to, uint256 amount) external onlyExchange {
-        pendingAmount[to] -= amount;
-        emit WithdrawRequestSucceed(to, amount);
-    }
+
+    // function withdrawalSucceed(address to, uint256 amount) external onlyExchange {
+    //     pendingAmount[to] -= amount;
+    //     emit WithdrawRequestSucceed(to, amount);
+    // }
 
     // ****************************************************
     // ****************** View functions ******************

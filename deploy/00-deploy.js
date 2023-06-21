@@ -18,6 +18,13 @@ module.exports = async () => {
         waitConfirmations: waitBlockConfirmations,
     })
 
+    const PolygonWalletsManager = await deploy("PolygonWalletsManager", {
+        from: deployer,
+        args: [ethers.utils.parseEther("1"),5],
+        log: true,
+        waitConfirmations: waitBlockConfirmations,
+    })
+
 }
 
 module.exports.tags = ["all", "creators"]

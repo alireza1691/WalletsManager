@@ -22,12 +22,12 @@ modifier allowed {
 }
 
 function payWithdrawalByAddress (address to) payable external allowed{
-    target.withdrawalSucceed(to, msg.value);
+    // target.withdrawalSucceed(to, msg.value);
     target.deposit{value: msg.value}(to);
 }
 
 function payWithdrawalByContract(address to, uint256 amount)  external allowed{
-    target.withdrawalSucceed(to, amount);
+    // target.withdrawalSucceed(to, amount);
     target.deposit{value: amount}(to);
 }
 
