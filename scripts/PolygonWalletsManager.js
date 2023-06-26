@@ -9,11 +9,19 @@ async function main() {
   const user =  accounts[1]
   console.log(deployer.address,'\n',user.address);
 
-  const PolygonWalletsManager =await deployments.get("PolygonWalletsManager")
+  const PolygonWalletsManager = await deployments.get("PolygonWalletsManager")
   const PolygonWalletsManagerContract = await ethers.getContractAt(PolygonWalletsManager.abi,PolygonWalletsManager.address)
+
   await PolygonWalletsManagerContract.deposit(deployer.address,{value: ethers.utils.parseEther("10")})
   const balance = await PolygonWalletsManagerContract.showBalance(deployer.address)
   console.log(balance.toString());
+
+  await PolygonWalletsManagerContract.internalTransfer(user.address, ethers.utils.parseEther("1"))
+  const userBal = await PolygonWalletsManagerContract.showBalance(user.address)
+  console.log("Balance of account 2 after internal transfer:", userBal.toString());
+
+//   await PolygonWalletsManagerContract.transfer(user.address,ethers.utils.parseEther("1"))
+//   const maticBalAcc2 = await 
 
 }
 
