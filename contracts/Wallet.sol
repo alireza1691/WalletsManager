@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "./TransferHelper.sol";
 import "./ExchangeModerator.sol";
 
 contract Wallet {
@@ -18,6 +20,10 @@ contract Wallet {
 
     receive() external payable {}
 
+    function depositERC20(address token, uint256 amount) external payable {
+        TransferHelper.safeTransferFrom(token, msg.sender, address(this), amount);
+    }
+
     function withdraw(uint _amount) external {
         require(msg.sender == owner, "caller is not owner");
         payable(msg.sender).transfer(_amount);
@@ -32,6 +38,10 @@ contract Wallet {
     function depositToExchangeRequest(uint256 amount) external {
         require(amount > balance() && amount > minimumAmount, "Insufficient balance");
         target.depositToExchangeRequest{value: amount}(msg.sender);
+    }
+      function withdrawFromExchangeRequest(uint256 amount) external {
+        require(amount > balance() && amount > minimumAmount, "Insufficient balance");
+        target.withdrawFromExchangeRequest(msg.sender, amount);
     }
 
 

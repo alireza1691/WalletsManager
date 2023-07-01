@@ -19,12 +19,12 @@ contract ExchangeModerator is Ownable,ReentrancyGuard {
     mapping (address => uint256) private balances;
     mapping (address => address) private userToWallet;
 
-    function withdrawFromExchangeRequest(address to) external payable{
-        emit WithdrawFromExchangeRequest(to, msg.value);
+    function withdrawFromExchangeRequest(address to, uint256 amount) external payable{
+        emit WithdrawFromExchangeRequest(to, amount);
     }
 
     function depositToExchangeRequest(address from) external payable{
-        emit WithdrawFromExchangeRequest(from, msg.value);
+        emit DepositToExchangeRequest(from, msg.value);
     }
 
     function newWallet(/*bytes32 _salt*/uint256 num) external{
