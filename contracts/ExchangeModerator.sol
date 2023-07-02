@@ -6,6 +6,12 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./Wallet.sol";
 
+
+/// @title A title that should describe the contract/interface
+/// @author The name of the author
+/// @notice Explain to an end user what this does
+/// @dev Explain to a developer any extra details
+
 contract ExchangeModerator is Ownable,ReentrancyGuard {
 
     event WithdrawFromExchangeRequest(address to, uint256 amount);
