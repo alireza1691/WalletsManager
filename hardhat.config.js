@@ -14,6 +14,7 @@ const PRIVATE_KEY = process.env.PRIVATE_KEY
 const POLYGONSCAN_API_KEY = process.env.POLYGONSCAN_API_KEY || "Your polygonscan API key"
 
 module.exports = {
+    
   defaultNetwork: "hardhat",
   networks: {
       hardhat: {
